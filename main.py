@@ -27,7 +27,7 @@ class rsaEncrypt(object):
         self.m = p * q
         self.f_n = (p - 1) * (q - 1)
         self.publicKey = (encryptionExponent, self.m)
-        self.decryptionExponent = self.findMod()
+        self.decryptionExponent = self.findDecryptExponent()
         return
 
     def __repr__(self):
@@ -44,14 +44,16 @@ class rsaEncrypt(object):
         result = json.dumps(ret)
         return result
 
-        # should do real mod arithmitic here not a while loop
-    def findMod(self):
-        mod = -1
-        i = 0
-        while not mod == 1:
-            i += 1
-            mod = (self.encryptionExponent * i) % self.f_n
-        return i
+    def findDecryptExponent(self):
+        def extended_gcd(a, b):
+            if a == 0:
+                return b, 0, 1
+            else:
+                gcd, x, y = extended_gcd(b % a, a)
+                return gcd, y - (b // a) * x, x
+
+        gCD, X, Y = extended_gcd(self.encryptionExponent, self.f_n)
+        return X + self.f_n
 
     def encryptionWithPartyBPublicKey(self, inputString: str = None):
         """
@@ -117,19 +119,20 @@ def main():
     # Main
     ##############################################
 
-    testRSA = False
-    testCeasar = True
+    testRSA = True
+    testCeasar = False
+
     if testRSA:
+        message = "dont speak unless you can improve silence"
         print("Encrypted message: ")
         encryptor = rsaEncrypt(p=7, q=19, encryptionExponent=5)
 
-        encryptedMessage = encryptor.encryptionWithPartyBPublicKey(inputString=strangeMessage)
+        encryptedMessage = encryptor.encryptionWithPartyBPublicKey(inputString=message)
         print(encryptedMessage)
 
         print("Decrypted message: ")
         decryptedMessage = encryptor.decryptionWithPartyBPublicKey(inputString=encryptedMessage)
         print(decryptedMessage)
-        pprint.pprint(encryptor)
 
     if testCeasar:
         cc = CeaCipher(shift=55)
