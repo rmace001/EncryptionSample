@@ -120,7 +120,6 @@ def main():
 
     testRSA = False
     testCeasar = True
-    message = "i can do this all day"
 
     if testRSA:
         message = "dont speak unless you can improve silence"
@@ -135,14 +134,31 @@ def main():
         print(decryptedMessage)
 
     if testCeasar:
-        cc = CeaCipher(shift=-980)
+        testCase0 = "hello world"
+        shift0 = 1
 
-        em = " ".join(cc.encodeMessage(message=word) for word in message.split())
-        print(em)
+        testCase1 = "z"
+        shift2 = 5
 
-        dm = " ".join(cc.decodeMessage(message=word) for word in em.split())
-        print(dm)
+        testCase2 = "zoom"
+        shift1 = 10
 
+        testCase3 = "i can do this all day"
+        shift = 4242
+
+        testCases = ["hello world", "z", "zoom", "i can do this all day"]
+        shifts = [-1, -5, -10, -4242]
+
+        for i in range(len(testCases)):
+            cc = CeaCipher(shift=shifts[i])
+
+            em = " ".join(cc.encodeMessage(message=word) for word in testCases[i].split())
+            print(em)
+
+            dm = " ".join(cc.decodeMessage(message=word) for word in em.split())
+            print(dm)
+
+        print(" ".join(letter for letter in cc.alphabet))
     return
 
 
