@@ -73,9 +73,8 @@ class rsaEncrypt(object):
 
 
 class CeaCipher(object):
-    alphabet = list(string.ascii_lowercase) + [" "]
+    alphabet = list(string.ascii_lowercase)
     alphabet_dict = {list(string.ascii_lowercase)[i]: i for i in range(len(list(string.ascii_lowercase)))}
-    alphabet_dict[" "] = 26
 
     def __init__(self, shift):
         self.shift = self.setShift(shift=shift)
@@ -119,8 +118,9 @@ def main():
     # Main
     ##############################################
 
-    testRSA = True
-    testCeasar = False
+    testRSA = False
+    testCeasar = True
+    message = "i can do this all day"
 
     if testRSA:
         message = "dont speak unless you can improve silence"
@@ -135,17 +135,14 @@ def main():
         print(decryptedMessage)
 
     if testCeasar:
-        cc = CeaCipher(shift=55)
-        cc1 = CeaCipher(shift=-33)
+        cc = CeaCipher(shift=-980)
 
-        em = cc.encodeMessage(message="great to be here")
+        em = " ".join(cc.encodeMessage(message=word) for word in message.split())
         print(em)
-        em = cc.decodeMessage(message="hsfbuaupacfaifsf")
-        print(em)
-        em = cc1.encodeMessage(message="great to be here")
-        print(em)
-        em = cc1.decodeMessage(message="alzvnuniuwzubzlz")
-        print(em)
+
+        dm = " ".join(cc.decodeMessage(message=word) for word in em.split())
+        print(dm)
+
     return
 
 
