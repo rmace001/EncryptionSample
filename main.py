@@ -16,8 +16,8 @@ import json
 class rsaEncrypt(object):
     # Create alphabet array with space character as the 26th element
     # Also create a dictionary for each (key: letter, value: letter index) pair
-    # encryptedLetter   = plainLetter     ^ public_encrypt_exponent  Mod m
-    # plainLetter       = encryptedLetter ^ private-decrypt_exponent Mod m
+    # encryptedValue         = plainLetterIndex  ^ public_encrypt_exponent  Mod m
+    # plainLetterIndex       = encryptedValue    ^ private_decrypt_exponent Mod m
     alphabet = list(string.ascii_lowercase) + [" "]
     alphabet_dict = {list(string.ascii_lowercase)[i]: i for i in range(len(list(string.ascii_lowercase)))}
     alphabet_dict[" "] = 26
@@ -61,15 +61,20 @@ class rsaEncrypt(object):
         :param inputString: Message to encrypt
         :return: encrypted message where each encrypted letter is shown as a number and is separated by a '-'
         """
-        return '-'.join(
+        return ','.join(
             [str(n) for n in [self.getNextLetter(elem=elem, duringEncryption=True) for elem in inputString]])
 
     def decryptionWithPartyBPublicKey(self, inputString: str = None):
-        return ''.join([str(self.getNextLetter(elem=n, duringEncryption=False)) for n in inputString.split('-')])
+        return ''.join([str(self.getNextLetter(elem=n, duringEncryption=False)) for n in inputString.split(',')])
 
     def getNextLetter(self, elem: str = None, duringEncryption: bool = False):
-        return int(self.alphabet_dict[elem]) ** self.encryptionExponent % self.m if duringEncryption \
-            else self.alphabet[int(elem) ** self.decryptionExponent % self.m]
+        if duringEncryption:
+            return int(self.alphabet_dict[elem]) ** self.encryptionExponent % self.m
+        else:
+            va = int(elem) ** self.decryptionExponent % self.m
+            return self.alphabet[int(elem) ** self.decryptionExponent % self.m]
+        # return int(self.alphabet_dict[elem]) ** self.encryptionExponent % self.m if duringEncryption \
+        #     else self.alphabet[int(elem) ** self.decryptionExponent % self.m]
 
 
 class CeaCipher(object):
@@ -123,31 +128,22 @@ def main():
 
     if testRSA:
         message = "dont speak unless you can improve silence"
-        testCases = ["on your left",
-                     "Part of the journey is the end".lower(),
-                     "Tony trying to get you to stop has been one of the few failures of my entire life".lower(),
-                     "No amount of money ever bought a second of time".lower(),
-                     "You know I keep telling everybody they should move on and grow".lower(),
-                     "no mistakes"]
+        testCases = [
+            "on your left",
+            "i am iron man",
+             "Part of the journey is the end".lower(),
+             "Tony trying to get you to stop has been one of the few failures of my entire life".lower(),
+             "No amount of money ever bought a second of time".lower(),
+             "You know I keep telling everybody they should move on and grow".lower(),
+             "no mistakes"]
         encryptor = rsaEncrypt(p=7, q=19, encryptionExponent=5)
         for i in range(len(testCases)):
-            letterLists = list()
-            for word in testCases[i].split():
-                encryptedMessage = encryptor.encryptionWithPartyBPublicKey(inputString=word).split('-')
-                letterLists.append(encryptedMessage)
+            encryptedMessage = encryptor.encryptionWithPartyBPublicKey(inputString=testCases[i])
+            print(encryptedMessage)
 
-            joinedLetterLists = list()
-            for letterList in letterLists:
-                joinedLetterLists.append("".join(word for word in letterList))
-
-            print("Encrypted message")
-            print(" ".join(word for word in joinedLetterLists))
-
-            words = list()
-            for letterList in letterLists:
-                words.append(encryptor.decryptionWithPartyBPublicKey(inputString="-".join(word for word in letterList)))
-            print("Decrypted message")
-            print(" ".join(word for word in words))
+            print("Decrypted message: ")
+            decryptedMessage = encryptor.decryptionWithPartyBPublicKey(inputString=encryptedMessage)
+            print(decryptedMessage)
 
     if testCeasar:
         testCases = ["hello world", "apple", "i can do this all day", "on your left", "doth mother know you weareth her drapes", "WE ARE NOT AGENTS OF NOTHING WE ARE AGENTS OF SHIELD AND THAT STILL CARRIES WEIGHT IT HAS TO CARRY WEIGHT".lower()]
