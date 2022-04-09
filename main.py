@@ -118,37 +118,48 @@ def main():
     # Main
     ##############################################
 
-    testRSA = False
+    testRSA = True
     testCeasar = True
 
     if testRSA:
         message = "dont speak unless you can improve silence"
-        print("Encrypted message: ")
+        testCases = ["on your left",
+                     "Part of the journey is the end".lower(),
+                     "Tony trying to get you to stop has been one of the few failures of my entire life".lower(),
+                     "No amount of money ever bought a second of time".lower(),
+                     "You know I keep telling everybody they should move on and grow".lower(),
+                     "no mistakes"]
         encryptor = rsaEncrypt(p=7, q=19, encryptionExponent=5)
+        for i in range(len(testCases)):
+            letterLists = list()
+            for word in testCases[i].split():
+                encryptedMessage = encryptor.encryptionWithPartyBPublicKey(inputString=word).split('-')
+                letterLists.append(encryptedMessage)
 
-        encryptedMessage = encryptor.encryptionWithPartyBPublicKey(inputString=message)
-        print(encryptedMessage)
+            joinedLetterLists = list()
+            for letterList in letterLists:
+                joinedLetterLists.append("".join(word for word in letterList))
 
-        print("Decrypted message: ")
-        decryptedMessage = encryptor.decryptionWithPartyBPublicKey(inputString=encryptedMessage)
-        print(decryptedMessage)
+            print("Encrypted message")
+            print(" ".join(word for word in joinedLetterLists))
+
+            words = list()
+            for letterList in letterLists:
+                words.append(encryptor.decryptionWithPartyBPublicKey(inputString="-".join(word for word in letterList)))
+            print("Decrypted message")
+            print(" ".join(word for word in words))
 
     if testCeasar:
-        testCase0 = "hello world"
-        shift0 = 1
+        testCases = ["hello world", "apple", "i can do this all day", "on your left", "doth mother know you weareth her drapes", "WE ARE NOT AGENTS OF NOTHING WE ARE AGENTS OF SHIELD AND THAT STILL CARRIES WEIGHT IT HAS TO CARRY WEIGHT".lower()]
+        shifts = [1, 5, 4242, 56432, 1234, 1111]
 
-        testCase1 = "z"
-        shift2 = 5
-
-        testCase2 = "zoom"
-        shift1 = 10
-
-        testCase3 = "i can do this all day"
-        shift = 4242
-
-        testCases = ["hello world", "z", "zoom", "i can do this all day"]
-        shifts = [-1, -5, -10, -4242]
-
+        testCases = ["on your left",
+                     "Part of the journey is the end".lower(),
+                     "Tony trying to get you to stop has been one of the few failures of my entire life".lower(),
+                     "No amount of money ever bought a second of time".lower(),
+                     "You know I keep telling everybody they should move on and grow".lower(),
+                     "no mistakes"]
+        shifts = [-3, -223, -34, 54433, -88888, 12345]
         for i in range(len(testCases)):
             cc = CeaCipher(shift=shifts[i])
 
